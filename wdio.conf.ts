@@ -2,6 +2,8 @@ import 'dotenv/config';
 
 const runAllure = process.env.ALLURE === 'true';
 
+const tagExpression = process.env.TAG || '';
+
 export const config: WebdriverIO.Config = {
     //
     // ====================
@@ -162,6 +164,7 @@ export const config: WebdriverIO.Config = {
         strict: false,
         // <string> (expression) only execute the features or scenarios with tags matching the expression
         tagExpression: '',
+        tagExpression: tagExpression,
         // <number> timeout for step definitions
         timeout: 60000,
         // <boolean> Enable this config to treat undefined definitions as warnings.

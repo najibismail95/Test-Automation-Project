@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "wdio run ./wdio.conf.ts",
-    "test:report": "ALLURE=true wdio run ./wdio.conf.ts"
+    "test": "node ./scripts/test-runner.js",
+    "test:report": "ALLURE=true node ./scripts/test-runner.js"
   },
   "keywords": [],
   "author": "",
