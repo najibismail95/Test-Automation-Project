@@ -3,11 +3,15 @@ import BasePage from "../base.page";
 export class HomePage extends BasePage {
 
 
-private homePageIdentifier : string = 'div.oxd-topbar-header-title';
+    private homePageIdentifier : string = 'div.oxd-topbar-header-title';
 
-async assertIsOnHomepage(): Promise<void> {
-    await expect(browser).toHaveUrl(/dashboard/i);
-    await expect($(this.homePageIdentifier)).toBeDisplayed();
-}
+    async assertIsOnHomepage(): Promise<void> {
+        await expect(browser).toHaveUrl(/dashboard/i);
+        await expect($(this.homePageIdentifier)).toBeDisplayed();
+    }
 
+    async verifyDashboardWidgets(...widgets: string[]): Promise<void> {
+        const selectors = widgets.map(widget => `p*=${widget}`);
+        await this.verifyElementsDisplayed(selectors);
+    }
 }

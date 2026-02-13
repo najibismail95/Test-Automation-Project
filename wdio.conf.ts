@@ -1,5 +1,7 @@
 import 'dotenv/config';
 
+const runAllure = process.env.ALLURE === 'true';
+
 export const config: WebdriverIO.Config = {
     //
     // ====================
@@ -129,7 +131,14 @@ export const config: WebdriverIO.Config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec'],
+    reporters: runAllure ? [
+        'spec',
+        ['allure', {
+            outputDir: 'allure-results',
+            disableWebdriverStepsReporting: true,
+            useCucumberStepReporter: true,
+        }]
+    ] : ['spec'],
 
     // If you are using Cucumber you need to specify the location of your step definitions.
     cucumberOpts: {
@@ -173,8 +182,15 @@ export const config: WebdriverIO.Config = {
      * @param {object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-    // onPrepare: function (config, capabilities) {
-    // },
+    onPrepare: function (config, capabilities) {
+        if (runAllure) {
+            const fs = require('fs');
+            const dir = 'allure-results';
+            if (fs.existsSync(dir)) {
+                fs.rmSync(dir, { recursive: true, force: true });
+            }
+        }
+    },
     /**
      * Gets executed before a worker process is spawned and can be used to initialize specific service
      * for that worker as well as modify runtime environments in an async fashion.
@@ -213,7 +229,6 @@ export const config: WebdriverIO.Config = {
      * @param {object}         browser      instance of created browser/device session
      */
     before: function () {
-        // THIS IS THE SPOT!
         const { expect: wdioExpect } = require('expect-webdriverio');
         global.expect = wdioExpect;
     },
@@ -324,8 +339,25 @@ export const config: WebdriverIO.Config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-    // onComplete: function(exitCode, config, capabilities, results) {
-    // },
+    onComplete: function(exitCode, config, capabilities, results) {
+        if (runAllure) {
+            const { exec, spawn } = require('child_process');
+            return new Promise<void>((resolve, reject) => {
+                exec('yarn allure generate allure-results --clean', (err: any, stdout: any, stderr: any) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    console.log('Allure report generated successfully. Opening report...');
+                    const report = spawn('yarn', ['allure', 'open'], {
+                        detached: true,
+                        stdio: 'ignore'
+                    });
+                    report.unref();
+                    resolve();
+                });
+            });
+        }
+    },
     /**
     * Gets executed when a refresh happens.
     * @param {string} oldSessionId session ID of the old session
