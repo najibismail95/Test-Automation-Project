@@ -15,3 +15,14 @@ Feature: Dashboard Page post Login
       | Buzz Latest Posts                 |
       | Employee Distribution by Sub Unit |
       | Employee Distribution by Location |
+
+  @quickLaunch
+  Scenario Outline: Verify Quick Launch Shortcuts
+    When I click on "<Shortcut>" in the Quick Launch widget
+    Then I should be redirected to the "<Page>" page
+
+    Examples:
+      | Shortcut     | Page                  |
+      | Assign Leave | assignLeave           |
+      | Leave List   | viewLeaveList         |
+      | Timesheets   | viewEmployeeTimesheet |

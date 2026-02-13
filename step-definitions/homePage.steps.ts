@@ -17,3 +17,11 @@ Then(/^I should see the following widgets$/, async (dataTable) => {
     const widgets = dataTable.raw().map((row: string[]) => row[0]);
     await homePage.verifyDashboardWidgets(...widgets);
 });
+
+When(/^I click on "([^"]*)" in the Quick Launch widget$/, async (shortcut) => {
+    await homePage.clickQuickLaunchItem(shortcut);
+});
+
+Then(/^I should be redirected to the "([^"]*)" page$/, async (pageUrlPart) => {
+    await homePage.verifyUrlContains(pageUrlPart);
+});

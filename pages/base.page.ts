@@ -5,6 +5,10 @@ import { browser } from '@wdio/globals'
 */
 export default class BasePage {
     
+    /**
+     * Navigates to the specified URL.
+     * @param url - The URL to navigate to
+     */
     async navigateToUrl (url: string): Promise<void> {
         await browser.url(url);
     }
@@ -19,5 +23,13 @@ export default class BasePage {
             await element.waitForDisplayed();
             await expect(element).toBeDisplayed();
         }
+    }
+
+    /**
+     * Verifies that the current URL contains the specified text.
+     * @param urlPart - The text to check for in the URL
+     */
+    async verifyUrlContains(urlPart: string): Promise<void> {
+        await expect(browser).toHaveUrl(new RegExp(urlPart));
     }
 }
